@@ -1,0 +1,17 @@
+{
+  "name": "sample-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "rabbus": "^0.3.0",
+    "util": "^0.10.3",
+    "wascally": "^0.2.4"
+  }
+}
