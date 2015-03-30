@@ -31,9 +31,13 @@ Rabbit.configure( { connection:config.rabbit } )
 				var message = {
 					place: "world"
 				};
-				sender.send(message, function(){
-					console.log("sent a message");
-				});
+				setInterval( function () {
+					sender.send(message, function(){
+						console.log( 'test' );
+					// res( res );
+					});
+				}, 1000 );
+
 				res( 'hi ditz' );
 
 			}
