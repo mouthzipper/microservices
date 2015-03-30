@@ -9,7 +9,7 @@ var config = require( './config/config.json')[env];
 var server = new Hapi.Server();
 
 server.connection( config.api );
-
+// sender
 function SomeSender( rabbus ){
 	Rabbus.Sender.call(this, rabbus, {
 		exchange: 'send-rec.exchange',
@@ -19,7 +19,7 @@ function SomeSender( rabbus ){
 }
 
 util.inherits(SomeSender, Rabbus.Sender);
-
+// publisher
 function SomePublisher(rabbus){
 	Rabbus.Publisher.call(this, rabbus, {
 		exchange: 'pub-sub.exchange',
@@ -29,7 +29,16 @@ function SomePublisher(rabbus){
 }
 
 util.inherits(SomePublisher, Rabbus.Publisher);
+// requester
+function SomeRequester(rabbus){
+	Rabbus.Requester.call(this, rabbus, {
+		exchange: 'req-res1.exchange',
+		routingKey: 'req-res1.key',
+		messageType: 'req-res1.messageType'
+	});
+}
 
+util.inherits(SomeRequester, Rabbus.Requester);
 
 Rabbit.configure( { connection:config.rabbit } )
 	.then( function ( ) {
@@ -52,7 +61,7 @@ Rabbit.configure( { connection:config.rabbit } )
 			}
 		});
 		server.route( {
-			path : '/pub',
+			path : '/publish',
 			method: 'GET',
 			handler : function ( req, res ) {
 				var publish = new SomePublisher(Rabbit);
@@ -66,6 +75,21 @@ Rabbit.configure( { connection:config.rabbit } )
 				}, 1000 );
 
 				res( 'this is a message publisher' );
+
+			}
+		});
+		server.route( {
+			path : '/request',
+			method: 'GET',
+			handler : function ( req, res ) {
+				var requester = new SomeRequester(Rabbit);
+				var msg = {};
+				requester.request(msg, function(response, done){
+					console.log("Hello", response.place);
+					done();
+				});
+
+				res( 'this is a message requester' );
 
 			}
 		});
