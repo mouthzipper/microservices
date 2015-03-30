@@ -1,0 +1,10 @@
+{
+    "dev": {
+        "rabbit":{
+            "server" :"localhost",
+            "vhost":"/",
+            "user":"guest",
+            "pass":"guest"
+        }
+    }
+}

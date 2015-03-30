@@ -1,8 +1,8 @@
-var Hapi = require( 'hapi' );
-var env = process.env[ 'NODE_ENV'] || 'dev';
+var Hapi   = require( 'hapi' );
+var env    = process.env[ 'NODE_ENV'] || 'dev';
 var Rabbit = require( 'wascally' );
 var Rabbus = require( 'rabbus' );
-var util = require( 'util' );
+var util   = require( 'util' );
 var config = require( './config/config.json')[env];
 
 // start a server
@@ -20,11 +20,21 @@ function SomeSender( rabbus ){
 
 util.inherits(SomeSender, Rabbus.Sender);
 
+function SomePublisher(rabbus){
+	Rabbus.Publisher.call(this, rabbus, {
+		exchange: 'pub-sub.exchange',
+		routingKey: 'pub-sub.key',
+		messageType: 'pub-sub.messageType'
+	});
+}
+
+util.inherits(SomePublisher, Rabbus.Publisher);
+
 
 Rabbit.configure( { connection:config.rabbit } )
 	.then( function ( ) {
 		server.route( {
-			path : '/chix',
+			path : '/send',
 			method: 'GET',
 			handler : function ( req, res ) {
 				var sender = new SomeSender(Rabbit);
@@ -33,12 +43,29 @@ Rabbit.configure( { connection:config.rabbit } )
 				};
 				setInterval( function () {
 					sender.send(message, function(){
-						console.log( 'test' );
-					// res( res );
+						console.log( 'sending message' );
+					});
+				}, 5000 );
+
+				res( 'this is a message sender' );
+
+			}
+		});
+		server.route( {
+			path : '/pub',
+			method: 'GET',
+			handler : function ( req, res ) {
+				var publish = new SomePublisher(Rabbit);
+				var message = {
+					place: "world"
+				};
+				setInterval( function () {
+					publish.publish(message, function(){
+						console.log( 'publishing message' );
 					});
 				}, 1000 );
 
-				res( 'hi ditz' );
+				res( 'this is a message publisher' );
 
 			}
 		});
