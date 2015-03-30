@@ -1,3 +1,4 @@
 gateway/node_modules/
 receiver-service/node_modules/
 subscriber-service/node_modules/
+responder-service/node_modules/
